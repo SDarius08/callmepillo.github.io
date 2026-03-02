@@ -7,13 +7,13 @@ Camera Pixy utilizeaza un procesor NXP LPC4330TFBGA100 care poate fi programat f
 ## Programare prin USB
 
 Interfata USB este conectata la pinii USB0_DP, USB0_DM, USB0_VBUS, USB0_ID.
-{*citeste data sheet procesor si vezi cum functioneaza acesti pini*}
+{_citeste data sheet procesor si vezi cum functioneaza acesti pini_}
 [Poza interfatare USB]
 
-## Programare 
+## Programare
 
 Cei 10 pini J5 ai camerei Pixy sunt exposi prin pad-uri. Acestia sunt conectati la interfata JTAG a placii (JTAG_TDI, JTAG_TDO, JTAG_TMS, JTAG_TRST).
-{*citeste data sheet procesor, programare prin jtag*}
+{_citeste data sheet procesor, programare prin jtag_}
 [Poza interfatare JTAG]
 
 ## Considerente

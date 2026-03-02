@@ -1,8 +1,9 @@
 # Centralizator Meets
 
 ## ALL MEETS:
-1. Meet 1 (11.02) - [ref](./meet1.md)
-2. Meet 2 (tba) - [ref](./meet2.md)
+
+1. Meet 1 (11.02.26) - [ref](./meet1.md)
+2. Meet 2 (26.02.26) - [ref](./meet2.md)
 
 ## Template
 
