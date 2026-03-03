@@ -205,6 +205,8 @@ m^i_t = w_2 \cdot m^i_{curr} + (1 - w_2) \cdot m^i_{t-1}
 b^i_t = w_2 \cdot b^i_{curr} + (1 - w_2) \cdot b^i_{t-1} \tag{16}
 \\]
 
+*Unde \\(theta_t\\) va controla unghiul servoului simulat*
+
 ---
 
 ## MORE_TO_BE_ADDED
