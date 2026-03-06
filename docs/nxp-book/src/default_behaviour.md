@@ -41,14 +41,14 @@ primul avand rolul unui HAL, iar al doilea ocupandu-se cu logica de functionare.
 Contine logica de initializare si directive pre-procesor pentru determinarea configuratiilor. Aici regasim si functia responsabila de 
 state-machine si anume `exec_mainLoop();` definita in `exec.cpp`
 
-## exec.cpp
+### exec.cpp
 
 Cum este mentionat mai sus, defineste `exec_mainLoop();` si apelurile prin chirp. Functia asta sugereaza 4 stari de functionare:
 0 (setup), LOOP_STATE (loop), 3 (stop) si 4 (idle/wait for run). In LOOP_STATE regasim `exec_progLoop();` care, la randul ei,
 apeleaza o metoda `loop` a unui obiect de tip `Prog`. Asta este bucla noastra principala, care este definita separat pentru fiecare
 program: LineTracking, ConnectedColors, PanTilt. In cazul nostru ne intereseaza doar LineTracking.
 
-## progline.cpp
+### progline.cpp
 
 Aici avem definit obiectul `ProgLine:Prog`.
 
