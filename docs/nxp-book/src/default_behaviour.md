@@ -29,18 +29,26 @@ Pentru compilare, recomandarea este utilizarea lui uVision (Keil MDK v5). Din pa
 Intreg proiectul este compus din 4 subproiecte importante, toate adunate intr-un workspace: libpixy_m4, libpixy_m0, main_m0, main_m4.
 Acestea trebuie compilate in aceasta ordine (in care au fost mentionate), in final obtinand un fisier cu extensia hex care poate fi incarcat pe placa.
 
-## libpixy_m4
-  
-Descriere
+## M4
 
-## libpixy_m0
+Procesorul M4 este responsabil de marea majoritate a task-urilor si este cel care asigura mecanismul de line-tracking.
+Acesta comunica cu procesorul M0 si cu driver-ul PixyMon prin intermediul mecanismului de chirp (pentru RPC) si contine programele pre-configurate ale camerei.
+Astfel, aici gasim cele mai importante fisiere sursa pentru proiectul nostru. Pe acest procesor sunt confiugrate 2 proiecte: libpixy_m4 si main_m4,
+primul avand rolul unui HAL, iar al doilea ocupandu-se cu logica de functionare.
 
-Descriere
+### main_m4.cpp
 
-## main_m0
+Contine logica de initializare si directive pre-procesor pentru determinarea configuratiilor. Aici regasim si functia responsabila de 
+state-machine si anume `exec_mainLoop();` definita in `exec.cpp`
 
-Descriere
+## exec.cpp
 
-## main_m4
+Cum este mentionat mai sus, defineste `exec_mainLoop();` si apelurile prin chirp. Functia asta sugereaza 4 stari de functionare:
+0 (setup), LOOP_STATE (loop), 3 (stop) si 4 (idle/wait for run). In LOOP_STATE regasim `exec_progLoop();` care, la randul ei,
+apeleaza o metoda `loop` a unui obiect de tip `Prog`. Asta este bucla noastra principala, care este definita separat pentru fiecare
+program: LineTracking, ConnectedColors, PanTilt. In cazul nostru ne intereseaza doar LineTracking.
 
-Descriere
+## progline.cpp
+
+Aici avem definit obiectul `ProgLine:Prog`.
+
