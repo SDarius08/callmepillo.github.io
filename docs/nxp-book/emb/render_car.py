@@ -3,8 +3,8 @@ import subprocess
 import sys
 import shutil
 
-SCAD_FILE = "wirefollower.scad"    # Target OpenSCAD file
-OUTPUT_DIR = "render_output"     # Folder for all generated files
+SCAD_FILE = "./docs/nxp-book/emb/wirefollower.scad"    # Target OpenSCAD file
+OUTPUT_DIR = "./docs/nxp-book/emb/render_output"     # Folder for all generated files
 THEME = "DeepOcean"              # Color scheme
 
 # Static Render Settings
