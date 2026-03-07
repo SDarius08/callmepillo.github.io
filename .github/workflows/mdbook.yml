@@ -16,6 +16,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install System Dependencies (The Magic Sauce)
+        # Installing openscad, ffmpeg, and xvfb for the fake monitor
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openscad ffmpeg xvfb
+
+      - name: Generate 3D Renders
+        # xvfb-run wraps the python script, providing the fake display to OpenSCAD
+        run: xvfb-run --auto-servernum python ./docs/emb/render_car.py
+
       - name: Manual mdBook Install
         run: |
           MDBOOK_VERSION=$(curl -s https://api.github.com/repos/rust-lang/mdBook/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
