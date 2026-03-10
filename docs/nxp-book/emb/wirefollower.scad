@@ -42,7 +42,7 @@ module wirefollower() {
                         // 1. ADDITIVE: The solid core and outer sleeves
                         union() {
                                 // Central binding sphere (acts as the solid core)
-                                sphere(r = r_outer, $fn = 32);
+                                sphere(r = r_outer, $fn = 6);
                                 
                                 for (p = target_points) {
                                 v = p - center_pos;      
@@ -51,6 +51,7 @@ module wirefollower() {
                                 angle_y = acos(v[2] / d);
                                 
                                 rotate([0, angle_y, angle_z])
+                                rotate([0,0,30])
                                         cylinder(h = sleeve_length, r = r_outer, $fn = 6);
                                 }
                         }
@@ -84,7 +85,7 @@ module wirefollower() {
                 }
         }
 
-        module side_clasp(rod_dia = 0.5, plate_t = 0.2, sleeve_l = 1.2, wall = 0.15) {
+        module side_clasp(rod_dia = 0.5, plate_t = 0.2, sleeve_l = 1.2, wall = 0.2) {
     // Math & Hardware (cm)
     r_in = (rod_dia + 0.04) / 2; 
     r_out = r_in + wall;
@@ -100,17 +101,19 @@ module wirefollower() {
             union() {
                 // The Rod Sleeve
                 rotate([90, 0, 0])
+                rotate([0,0,30])
                 cylinder(h = sleeve_l, r = r_out, center = true, $fn = 6);
                 
                 // The "Neck" and Jaws
                 // Extends from the side of the sleeve over to the plate
-                translate([r_out - 0.15, -jaw_w/2, -(gap/2 + wall)])
-                cube([jaw_reach + 0.05, jaw_w, gap + (wall * 2)]);
+                translate([r_out - 0.25, -jaw_w/2, -(gap/2 + wall)])
+                cube([jaw_reach + 0.2, jaw_w, gap + (wall * 2)]);
             }
 
             // 2. SUBTRACTIVE: Carving the channels
             // The Rod Hole
             rotate([90, 0, 0])
+            rotate([0,0,30])
             cylinder(h = sleeve_l + 0.1, r = r_in, center = true, $fn = 6);
 
             // The Plate Gap (The "Mouth")
