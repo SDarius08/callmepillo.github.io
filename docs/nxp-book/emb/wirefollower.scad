@@ -78,8 +78,8 @@ module wirefollower() {
                         }
                 
                         difference() {
-                                cylinder(h=2, r=2, center=true, $fn=30);
-                                cylinder(h=3, r=1.0, center=true, $fn=30);
+                                sphere(r = 2, $fn=32);
+                                sphere(r = 1.0, $fn=32);
                         }
                         }
                 }
@@ -379,19 +379,19 @@ module wirefollower() {
             cameraHolder(wall_thickness = 0.2, tolerance = 0.05);
 
             difference() {
-            sleeve_hub([0.8,3.65,5],[[4.6,2,0]], rod_dia=0.4);
+            sleeve_hub([0.8,3.65,5],[[4.6,2,0]], rod_dia=0.4); //right
             translate([0,4,9 - 4.191/2])
             camera();
             }
 
             difference() {
-            sleeve_hub([-0.8,3.65,5],[[-4.6,2,0]], rod_dia=0.4);
+            sleeve_hub([-0.8,3.65,5],[[-4.6,2,0]], rod_dia=0.4); //left
             translate([0,4,9 - 4.191/2])
             camera();
             }
 
             difference() {
-            sleeve_hub([0,4.85,5],[[0,9,0]], rod_dia=0.4);
+            sleeve_hub([0,4.85,5],[[0,9,0],[0,10,2]], rod_dia=0.4); //center
             translate([0,4,9 - 4.191/2])
             camera();
             }
@@ -415,6 +415,8 @@ module wirefollower() {
         //wheel_suport_connect_right = get_node([4,5,0],[9,0,0],[5,0,0],[2.5,11.5,0]);
         //sleeve_hub(wheel_suport_connect_right, [[5,0,0],[9,0,0],[2.5,11.5,0]]);
 
+        center_point = [0,10,2];
+
         camera_support_right = get_node([5,0,0],[2.5,11.5,0],[4.6,2,0],[0,4,0]);
         sleeve_hub(camera_support_right, [[5,0,0],[2.5,11.5,0],[0,4,6]], rod_dia=0.4);
 
@@ -423,6 +425,24 @@ module wirefollower() {
 
         camera_support_center = [0,9,0];
         sleeve_hub(camera_support_center, [[0,0,0],[0,20,0],[0,4,6]], rod_dia=0.4);
+
+        frame_support_left_back = get_node([0,10,0], [-4.3,3,0], [-5,0,0],[-2.5,11.5,0]);
+        sleeve_hub(frame_support_left_back, [[-5,0,0],[-2.5,11.5,0],center_point], rod_dia=0.4);
+
+        frame_support_right_back = get_node([0,10,0], [4.3,3,0], [5,0,0],[2.5,11.5,0]);
+        sleeve_hub(frame_support_right_back, [[5,0,0],[2.5,11.5,0],center_point], rod_dia=0.4);
+
+        frame_support_left_front = get_node([0,10,0], [-2.5,11.5,0], [-5,0,0],[-2.5,11.5,0]);
+        sleeve_hub(frame_support_left_front, [[-5,0,0],center_point], rod_dia=0.4);
+
+        frame_support_right_front = get_node([0,10,0], [2.5,11.5,0], [-5,0,0],[2.5,11.5,0]);
+        sleeve_hub(frame_support_right_front, [[5,0,0],center_point], rod_dia=0.4);
+
+        frame_support_bumper = [0,19,0.2];
+        sleeve_hub(frame_support_bumper, [center_point], rod_dia=0.4);
+
+        frame_support_center = [0,10,2];
+        sleeve_hub(frame_support_center, [[-4.3,3,0],[-2.5,11.5,0],[4.3,3,0],[2.5,11.5,0],[0,4,6],[0,19,0]], rod_dia=0.4);
 
         translate([0,6.5,0])
         rotate([0,-90,0])
@@ -435,6 +455,14 @@ module wirefollower() {
 
         translate([-3.7,0,0.3])
         battery();
+
+        wire([-2.5,11.5,0],center_point,0.4);
+        wire([2.5,11.5,0],center_point,0.4);
+        wire([0,19,0.2],center_point,0.4);
+        wire(center_point,[0,4.85,5],0.4);
+        //wire(center_point,[0,9,0],0.4);
+        wire(center_point,[4.3,3,0],0.4);
+        wire(center_point,[-4.3,3,0],0.4);
 }
 
 
