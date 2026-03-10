@@ -51,7 +51,7 @@ module wirefollower() {
                                 angle_y = acos(v[2] / d);
                                 
                                 rotate([0, angle_y, angle_z])
-                                        cylinder(h = sleeve_length, r = r_outer, $fn = 32);
+                                        cylinder(h = sleeve_length, r = r_outer, $fn = 6);
                                 }
                         }
                         
@@ -65,7 +65,8 @@ module wirefollower() {
                                 rotate([0, angle_y, angle_z]) {
                                 // Carve the rod channel, starting at the offset so rods don't touch
                                 translate([0, 0, insertion_offset])
-                                        cylinder(h = sleeve_length + 0.1, r = r_inner, $fn = 32);
+                                rotate([0,0,30]) 
+                                        cylinder(h = sleeve_length + 0.1, r = r_inner, $fn = 6);
                                         
                                 // Carve the perpendicular M2 grub screw hole
                                 // Positioned halfway along the available insertion depth
@@ -99,7 +100,7 @@ module wirefollower() {
             union() {
                 // The Rod Sleeve
                 rotate([90, 0, 0])
-                cylinder(h = sleeve_l, r = r_out, center = true, $fn = 32);
+                cylinder(h = sleeve_l, r = r_out, center = true, $fn = 6);
                 
                 // The "Neck" and Jaws
                 // Extends from the side of the sleeve over to the plate
@@ -110,7 +111,7 @@ module wirefollower() {
             // 2. SUBTRACTIVE: Carving the channels
             // The Rod Hole
             rotate([90, 0, 0])
-            cylinder(h = sleeve_l + 0.1, r = r_in, center = true, $fn = 32);
+            cylinder(h = sleeve_l + 0.1, r = r_in, center = true, $fn = 6);
 
             // The Plate Gap (The "Mouth")
             translate([r_out, -jaw_w - 0.1, -gap/2])
@@ -142,10 +143,11 @@ module wirefollower() {
                 // acos(z/d) gives the angle from the Z axis
                 angle_z = atan2(v[1], v[0]);
                 angle_y = acos(v[2] / d);
-               
+
                 translate(p1)
-                        rotate([0, angle_y, angle_z])
-                        cylinder(h = d, r = w / 2, $fn = 24);
+                rotate([0, angle_y, angle_z])
+                rotate([0, 0, 30])
+                cylinder(h = d, r = w / 2, $fn = 6);
         }
 
 
@@ -374,19 +376,19 @@ module wirefollower() {
             cameraHolder(wall_thickness = 0.2, tolerance = 0.05);
 
             difference() {
-            sleeve_hub([0.8,3.65,5],[[4.6,2,0]]);
+            sleeve_hub([0.8,3.65,5],[[4.6,2,0]], rod_dia=0.4);
             translate([0,4,9 - 4.191/2])
             camera();
             }
 
             difference() {
-            sleeve_hub([-0.8,3.65,5],[[-4.6,2,0]]);
+            sleeve_hub([-0.8,3.65,5],[[-4.6,2,0]], rod_dia=0.4);
             translate([0,4,9 - 4.191/2])
             camera();
             }
 
             difference() {
-            sleeve_hub([0,4.85,5],[[0,9,0]]);
+            sleeve_hub([0,4.85,5],[[0,9,0]], rod_dia=0.4);
             translate([0,4,9 - 4.191/2])
             camera();
             }
