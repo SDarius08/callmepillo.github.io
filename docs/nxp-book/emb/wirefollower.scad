@@ -383,6 +383,10 @@ module wirefollower() {
                 frame_support_bumper = [0,19,0.2];
                 sleeve_hub(frame_support_bumper, [center_point], rod_dia=0.4);
 
+                translate([0,6.5,0])
+                rotate([0,-90,0])
+                side_clasp(rod_dia=0.4);
+
             }
         }
 
@@ -488,10 +492,6 @@ module wirefollower() {
 
         frame_support_center = [0,10,2];
         sleeve_hub(frame_support_center, [[-4.3,3,0],[-2.5,11.5,0],[4.3,3,0],[2.5,11.5,0],[0,4,6],[0,19,0]], rod_dia=0.4);
-
-        translate([0,6.5,0])
-        rotate([0,-90,0])
-        side_clasp(rod_dia=0.4);
 
         translate([0,6.75,2.7])
         rotate([-50,0,0])
