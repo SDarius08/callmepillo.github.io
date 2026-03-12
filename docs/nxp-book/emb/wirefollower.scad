@@ -31,8 +31,8 @@ module wirefollower() {
                 r_inner = (rod_dia + 0.04) / 2;     // 5.4mm hole for a 5.0mm rod 
                 r_outer = r_inner + wall_thickness; // 8.4mm outer diameter
                 
-                // M2 tap hole (1.8mm diameter to allow threads to bite)
-                m2_tap_r = 0.09; 
+                // M3 tap hole (1.8mm diameter to allow threads to bite)
+                m2_tap_r = 0.125; // its actuall m3 
                 
                 // Safety buffer to prevent physical rods from colliding inside the hub
                 insertion_offset = r_outer * 0.75;  
@@ -73,7 +73,7 @@ module wirefollower() {
                                 // Positioned halfway along the available insertion depth
                                 translate([0, 0, insertion_offset + ((sleeve_length - insertion_offset) / 2)])
                                         rotate([0, 90, 0])
-                                        cylinder(h = r_outer * 3, r = m2_tap_r, center = true, $fn = 16);
+                                        cylinder(h = r_outer * 3, r = m2_tap_r, center = true, $fn = 20);
                                 }
                         }
                 
@@ -86,54 +86,54 @@ module wirefollower() {
         }
 
         module side_clasp(rod_dia = 0.5, plate_t = 0.2, sleeve_l = 1.2, wall = 0.2) {
-    // Math & Hardware (cm)
-    r_in = (rod_dia + 0.04) / 2; 
-    r_out = r_in + wall;
-    gap = plate_t + 0.05; // Clearance for the baseplate
-    jaw_w = 0.8;          // Width of the clasping plates
-    jaw_reach = 0.7;      // How far the plates reach onto the chassis
-    m2_clear_r = 0.11;    // Top hole (slight clearance)
-    m2_tap_r = 0.085;     // Bottom hole (tight for threads)
-
-    union() {
-        difference() {
-            // 1. THE MAIN BODY (Sleeve + Neck + Jaws)
+            // Math & Hardware (cm)
+            r_in = (rod_dia + 0.04) / 2; 
+            r_out = r_in + wall;
+            gap = plate_t + 0.05; // Clearance for the baseplate
+            jaw_w = 0.8;          // Width of the clasping plates
+            jaw_reach = 0.7;      // How far the plates reach onto the chassis
+            m2_clear_r = 0.16;    // Top hole (slight clearance) // actually m3
+            m2_tap_r = 0.125;     // Bottom hole (tight for threads) // actually m3
+        
             union() {
-                // The Rod Sleeve
-                rotate([90, 0, 0])
-                rotate([0,0,30])
-                cylinder(h = sleeve_l, r = r_out, center = true, $fn = 6);
-                
-                // The "Neck" and Jaws
-                // Extends from the side of the sleeve over to the plate
-                translate([r_out - 0.25, -jaw_w/2, -(gap/2 + wall)])
-                cube([jaw_reach + 0.2, jaw_w, gap + (wall * 2)]);
+                difference() {
+                    // 1. THE MAIN BODY (Sleeve + Neck + Jaws)
+                    union() {
+                        // The Rod Sleeve
+                        rotate([90, 0, 0])
+                        rotate([0,0,30])
+                        cylinder(h = sleeve_l, r = r_out, center = true, $fn = 6);
+                        
+                        // The "Neck" and Jaws
+                        // Extends from the side of the sleeve over to the plate
+                        translate([r_out - 0.25, -jaw_w/2, -(gap/2 + wall)])
+                        cube([jaw_reach + 0.2, jaw_w, gap + (wall * 2)]);
+                    }
+        
+                    // 2. SUBTRACTIVE: Carving the channels
+                    // The Rod Hole
+                    rotate([90, 0, 0])
+                    rotate([0,0,30])
+                    cylinder(h = sleeve_l + 0.1, r = r_in, center = true, $fn = 6);
+        
+                    // The Plate Gap (The "Mouth")
+                    translate([r_out, -jaw_w - 0.1, -gap/2])
+                    cube([jaw_reach + 0.2, (jaw_w * 2) + 0.2, gap]);
+        
+                    // M2 Bolt Holes (Vertical)
+                    // Positioned in the center of the reach
+                    bolt_x = r_out + (jaw_reach / 2);
+                    
+                    // Top Hole (Clearance)
+                    translate([bolt_x, 0, gap/2 - 0.05])
+                    cylinder(h = wall + 0.2, r = m2_clear_r, $fn = 16);
+                    
+                    // Bottom Hole (Tap)
+                    translate([bolt_x, 0, -(gap/2 + wall + 0.1)])
+                    cylinder(h = wall + 0.2, r = m2_tap_r, $fn = 16);
+                }
             }
-
-            // 2. SUBTRACTIVE: Carving the channels
-            // The Rod Hole
-            rotate([90, 0, 0])
-            rotate([0,0,30])
-            cylinder(h = sleeve_l + 0.1, r = r_in, center = true, $fn = 6);
-
-            // The Plate Gap (The "Mouth")
-            translate([r_out, -jaw_w - 0.1, -gap/2])
-            cube([jaw_reach + 0.2, (jaw_w * 2) + 0.2, gap]);
-
-            // M2 Bolt Holes (Vertical)
-            // Positioned in the center of the reach
-            bolt_x = r_out + (jaw_reach / 2);
-            
-            // Top Hole (Clearance)
-            translate([bolt_x, 0, gap/2 - 0.05])
-            cylinder(h = wall + 0.2, r = m2_clear_r, $fn = 16);
-            
-            // Bottom Hole (Tap)
-            translate([bolt_x, 0, -(gap/2 + wall + 0.1)])
-            cylinder(h = wall + 0.2, r = m2_tap_r, $fn = 16);
         }
-    }
-}
 
         module wire(p1, p2, w) {
                 // Calculate the vector components
@@ -217,45 +217,45 @@ module wirefollower() {
         }
 
        module motorHolder(gndcl = 0.5, wall_thickness = 0.2, tolerance = 0.05) {
-    // N20 Motor Base Dimensions (in cm)
-    m_w = 1.0; 
-    m_l = 2.6; 
-    m_h = 1.2; 
-    
-    // Shaft center is in the middle of the height (0.6cm from motor bottom)
-    shaft_offset_z = m_h / 2; 
-
-    // Total height calculation: 
-    // We need enough plastic under the motor to match the gndcl requirement
-    // plus the motor itself and the top wall.
-    out_w = m_w + (2 * wall_thickness);
-    out_l = m_l + wall_thickness;
-    out_h = m_h + (2 * wall_thickness) + gndcl;
-
-    rotate([0, 0, 90]) 
-    difference() {
-        // 1. THE OUTER SHELL
-        // We translate it so Z=0 is the "Floor" (track surface)
-        translate([-out_w/2, 0, -0.35])
-            cube([out_w, out_l, out_h+0.35]);
-
-        // 2. THE MOTOR CUTOUT
-        // Positioned so the bottom of the motor is exactly 'gndcl' above Z=0
-        translate([-m_w/2 - tolerance/2, -tolerance, gndcl + wall_thickness])
-            cube([m_w + tolerance, m_l + tolerance * 2, m_h + tolerance]);
-
-        // 3. SHAFT HOLE
-        // Positioned at gndcl + wall + half motor height
-        translate([0, 0.1, gndcl + wall_thickness + shaft_offset_z])
-            rotate([90, 0, 0])
-            cylinder(h = 1.5, r = 0.3 + tolerance, $fn = 24);
-
-        // 4. TOP SNAP-IN SLOT
-        snap_width = m_w - 0.15; // Slightly tighter for better grip
-        translate([-snap_width/2, -0.5, gndcl + wall_thickness + m_h/2])
-            cube([snap_width, out_l + 1, m_h + wall_thickness + 1]);
-    }
-}
+            // N20 Motor Base Dimensions (in cm)
+            m_w = 1.0; 
+            m_l = 2.6; 
+            m_h = 1.2; 
+            
+            // Shaft center is in the middle of the height (0.6cm from motor bottom)
+            shaft_offset_z = m_h / 2; 
+        
+            // Total height calculation: 
+            // We need enough plastic under the motor to match the gndcl requirement
+            // plus the motor itself and the top wall.
+            out_w = m_w + (2 * wall_thickness);
+            out_l = m_l + wall_thickness;
+            out_h = m_h + (2 * wall_thickness) + gndcl;
+        
+            rotate([0, 0, 90]) 
+            difference() {
+                // 1. THE OUTER SHELL
+                // We translate it so Z=0 is the "Floor" (track surface)
+                translate([-out_w/2, 0, -0.35])
+                    cube([out_w, out_l, out_h+0.35]);
+        
+                // 2. THE MOTOR CUTOUT
+                // Positioned so the bottom of the motor is exactly 'gndcl' above Z=0
+                translate([-m_w/2 - tolerance/2, -tolerance, gndcl + wall_thickness])
+                    cube([m_w + tolerance, m_l + tolerance * 2, m_h + tolerance]);
+        
+                // 3. SHAFT HOLE
+                // Positioned at gndcl + wall + half motor height
+                translate([0, 0.1, gndcl + wall_thickness + shaft_offset_z])
+                    rotate([90, 0, 0])
+                    cylinder(h = 1.5, r = 0.3 + tolerance, $fn = 24);
+        
+                // 4. TOP SNAP-IN SLOT
+                snap_width = m_w - 0.15; // Slightly tighter for better grip
+                translate([-snap_width/2, -0.5, gndcl + wall_thickness + m_h/2])
+                    cube([snap_width, out_l + 1, m_h + wall_thickness + 1]);
+            }
+        }
 
         module cameraHolder(wall_thickness = 0.2, tolerance = 0.05) {
                 // Pixy2.1 Dimensions (in cm)
@@ -300,146 +300,191 @@ module wirefollower() {
 
                 }
         }
-       
+
+        
+        module baseplate(w=0.5, gndcl=0.6) {
+            union() {
+                 // wheel axle
+                wire([-8.5,0,0],[8.5,0,0],w);
+        
+                // central axle
+                wire([0,0,0],[0,19.5,0],w);
+        
+                // front bumper
+                difference() {
+                translate([0,10,-0.08])
+                difference() {
+                        cylinder(w, 9, 10, center = true);
+                        cylinder(h = 2, r = 8, center = true);
+                        translate([-10,-26,-5])
+                                cube([20,30,10]);
+                        
+                        
+                }
+                translate([3,18,0.65])
+                rotate([0,0,-30])
+                linear_extrude(height = 1, center = true)
+                text(".da$ba", size=1.0);
+                translate([-7.1,15.5,0.65])
+                rotate([0,0,30])
+                linear_extrude(height = 1, center = true)
+                text("NXP CUP 2026", size=0.7);
+                }
+
+                
+
+                // main plate
+                translate([-5,0,0])
+                trapez(10,5,11,0.2);
+
+                wire([0,10,0],[8,15,0],w); // front bumper
+                wire([0,10,0],[-8,15,0],w); // front bumper
+                wire([-5,0,0],[-2.5,11.5,0],w); // left chas rod
+                wire([5,0,0],[2.5,11.5,0],w); // right chas rod
+                
+                wire([-5,0,0],[2.5,11.5,0],w); // cross over
+                wire([5,0,0],[-2.5,11.5,0],w); // cross over
+        
+                // bumper support
+                wire([0,19,0],[5,13,0],w/2);
+                wire([0,19,0],[-5,13,0],w/2);
+
+                // bumper triangles
+                triangle2d([[0,10,0],[0,19,0],[5,13,0]], h=0.1);
+                triangle2d([[0,10,0],[0,19,0],[-5,13,0]], h=0.1);
+
+                camera_support_right = get_node([5,0,0],[2.5,11.5,0],[4.6,2,0],[0,4,0]);
+                sleeve_hub(camera_support_right, [[5,0,0],[2.5,11.5,0],[0,4,6]], rod_dia=0.4);
+        
+                camera_support_left = get_node([-5,0,0],[-2.5,11.5,0],[-4.6,2,0],[0,4,0]);
+                sleeve_hub(camera_support_left, [[-5,0,0],[-2.5,11.5,0],[0,4,6]], rod_dia=0.4);
+        
+                camera_support_center = [0,9,0];
+                sleeve_hub(camera_support_center, [[0,0,0],[0,20,0],[0,4,6]], rod_dia=0.4);
+        
+                frame_support_left_back = get_node([0,10,0], [-4.3,3,0], [-5,0,0],[-2.5,11.5,0]);
+                sleeve_hub(frame_support_left_back, [[-5,0,0],[-2.5,11.5,0],center_point], rod_dia=0.4);
+        
+                frame_support_right_back = get_node([0,10,0], [4.3,3,0], [5,0,0],[2.5,11.5,0]);
+                sleeve_hub(frame_support_right_back, [[5,0,0],[2.5,11.5,0],center_point], rod_dia=0.4);
+        
+                frame_support_left_front = get_node([0,10,0], [-2.5,11.5,0], [-5,0,0],[-2.5,11.5,0]);
+                sleeve_hub(frame_support_left_front, [[-5,0,0],center_point], rod_dia=0.4);
+        
+                frame_support_right_front = get_node([0,10,0], [2.5,11.5,0], [-5,0,0],[2.5,11.5,0]);
+                sleeve_hub(frame_support_right_front, [[5,0,0],center_point], rod_dia=0.4);
+
+                wheel_suport_connect_right = get_node([4,5,0],[8,0,0],[5,0,0],[2.5,11.5,0]);
+                sleeve_hub(wheel_suport_connect_right, [[5,0,0],[8,0,0],[2.5,11.5,0]]);
+
+                wheel_suport_connect_left = get_node([-4,5,0],[-8,0,0],[-5,0,0],[-2.5,11.5,0]);
+                sleeve_hub(wheel_suport_connect_left, [[-5,0,0],[-8,0,0],[-2.5,11.5,0]]);
+        
+                frame_support_bumper = [0,19,0.2];
+                sleeve_hub(frame_support_bumper, [center_point], rod_dia=0.4);
+
+            }
+        }
+
+        module cameraMount() {
+            union() {
+                rotate([0,0,180])
+                translate([0,-4,5])
+                cameraHolder(wall_thickness = 0.2, tolerance = 0.05);
+                difference() {
+                sleeve_hub([0.8,3.65,5],[[4.6,2,0]], rod_dia=0.4); //right
+                translate([0,4,9 - 4.191/2])
+                camera();
+                }
+                difference() {
+                sleeve_hub([-0.8,3.65,5],[[-4.6,2,0]], rod_dia=0.4); //left
+                translate([0,4,9 - 4.191/2])
+                camera();
+                }
+                difference() {
+                sleeve_hub([0,4.85,5],[[0,9,0],[0,10,2]], rod_dia=0.4); //center
+                translate([0,4,9 - 4.191/2])
+                camera();
+                }
+                
+            }
+        }
+
+        module motorMount(w = 0.5, gndcl = 0.6) {
+            // right motor holder
+            difference() {
+                translate([8.5,0,0])
+                difference() {
+                    motorHolder(gndcl = gndcl, wall_thickness = 0.2, tolerance = 0.03);
+                    translate([-2,0,-1])
+                    cylinder(h=1,r=0.125, $fn=6);
+                    translate([-1,0,-1])
+                    cylinder(h=1,r=0.125, $fn=6);
+                }
+                wire([-8.5,0,0],[8.5,0,0],w + 0.03);
+                wire([4,5,0],[8,0,0], w + 0.03);
+                wire([4,-5,0],[8,0,0], w + 0.03);
+            }
+        }
+
+        module props(w = 0.5, gndcl = 0.6) {
+            translate([8.5,-0.5,2.1-(gndcl+w/2) - 0.6])
+            motor();
+    
+            rotate([0,0,180])
+            translate([8.5,-0.5, 2.1-(gndcl+w/2) - 0.6])
+            motor();
+    
+            // Test render it
+            translate([0,4,9 - 4.191/2])
+            camera();
+    
+            translate([10-0.8,0,2.1-(gndcl+w/2)])
+            wheel();
+    
+            // 0 -> 2.1 - 0.6
+            translate([-10-0.8,0,2.1-(gndcl+w/2)])
+            wheel();
+
+            translate([-3.7,0,0.3])
+            battery();
+    
+        }
        
         width = 20;
         w = 0.5;
         gndcl = 0.6;
 
+        // camera holder
+        cameraMount();
 
-        // wheel axle
-        wire([-8.5,0,0],[8.5,0,0],w);
+        // base plate
+        baseplate(w = 0.5, gndcl = 0.6);
 
-        // central axle
-        wire([0,0,0],[0,19.5,0],w);
+        // right motor mount
+        motorMount();
 
-        // front bumper
-        translate([0,10,-0.25])
-        difference() {
-                cylinder(w, 9, 10, center = true);
-                cylinder(h = 2, r = 8, center = true);
-                translate([-10,-26,-5])
-                        cube([20,30,10]);
-        }
-
-
-        //translate([0,5/2,0])
-        //cube([10,5,1], center = true);
-
-        translate([-5,0,0])
-                trapez(10,5,11,0.2);
-
-
-        translate([8.5,-0.5,0.5])
-        motor();
-
-        translate([8.5,0,0])
-        motorHolder(wall_thickness = 0.2, tolerance = 0.03);
-
-
-        // To test it, render the holder and drop the motor inside:
+        // left motor mount
         rotate([0,0,180])
-        translate([8.5,0,0])
-        motorHolder(gndcl = gndcl, wall_thickness = 0.2, tolerance = 0.03);
-
-        rotate([0,0,180])
-        translate([8.5,-0.5, 2.1-(gndcl+w/2) - 0.6])
-        motor();
-       
-        wire([0,10,0],[8,15,0],w); // front bumper
-        wire([0,10,0],[-8,15,0],w); // front bumper
-        wire([-5,0,0],[-2.5,11.5,0],w); // left chas rod
-        wire([5,0,0],[2.5,11.5,0],w); // right chas rod
+        motorMount();
         
-        wire([-5,0,0],[2.5,11.5,0],w); // cross over
-        wire([5,0,0],[-2.5,11.5,0],w); // cross over
+        // models for battery motors etc
+        props();
 
-        //whell support
-        wire([4,5,0],[8,0,0],w);
-        wire([-4,5,0],[-8,0,0],w);
-
-        //support
-        wire([0,19,0],[5,13,0],w/2);
-        wire([0,19,0],[-5,13,0],w/2);
-
-        triangle2d([[0,10,0],[0,19,0],[5,13,0]], h=0.1);
-        triangle2d([[0,10,0],[0,19,0],[-5,13,0]], h=0.1);
-
+        // central camera support triangle
         rotate([0,90,0])
         triangle2d([[0,9,0],[0,6,0],[-5, 5,0]], h=0.1);
-
-        // Test render it
-        translate([0,4,9 - 4.191/2])
-        camera();
-
-        union() {
-            // Render the camera holder
-            rotate([0,0,180])
-            translate([0,-4,5])
-            cameraHolder(wall_thickness = 0.2, tolerance = 0.05);
-
-            difference() {
-            sleeve_hub([0.8,3.65,5],[[4.6,2,0]], rod_dia=0.4); //right
-            translate([0,4,9 - 4.191/2])
-            camera();
-            }
-
-            difference() {
-            sleeve_hub([-0.8,3.65,5],[[-4.6,2,0]], rod_dia=0.4); //left
-            translate([0,4,9 - 4.191/2])
-            camera();
-            }
-
-            difference() {
-            sleeve_hub([0,4.85,5],[[0,9,0],[0,10,2]], rod_dia=0.4); //center
-            translate([0,4,9 - 4.191/2])
-            camera();
-            }
-            
-        }
 
         //camera supports
         wire([0,9,0],[0,4,6],0.4); // center
         wire([4.6,2,0],[0,4,6],0.4); // right
         wire([-4.6,2,0],[0,4,6],0.4); // left
 
-        translate([10-0.8,0,2.1-(gndcl+w/2)])
-        wheel();
-
-
-        // 0 -> 2.1 - 0.6
-        translate([-10-0.8,0,2.1-(gndcl+w/2)])
-        wheel(); //0.65 ground clearance
-
-        
-        //wheel_suport_connect_right = get_node([4,5,0],[9,0,0],[5,0,0],[2.5,11.5,0]);
-        //sleeve_hub(wheel_suport_connect_right, [[5,0,0],[9,0,0],[2.5,11.5,0]]);
+        //whell support
+        wire([4,5,0],[8,0,0],w);
+        wire([-4,5,0],[-8,0,0],w);
 
         center_point = [0,10,2];
-
-        camera_support_right = get_node([5,0,0],[2.5,11.5,0],[4.6,2,0],[0,4,0]);
-        sleeve_hub(camera_support_right, [[5,0,0],[2.5,11.5,0],[0,4,6]], rod_dia=0.4);
-
-        camera_support_left = get_node([-5,0,0],[-2.5,11.5,0],[-4.6,2,0],[0,4,0]);
-        sleeve_hub(camera_support_left, [[-5,0,0],[-2.5,11.5,0],[0,4,6]], rod_dia=0.4);
-
-        camera_support_center = [0,9,0];
-        sleeve_hub(camera_support_center, [[0,0,0],[0,20,0],[0,4,6]], rod_dia=0.4);
-
-        frame_support_left_back = get_node([0,10,0], [-4.3,3,0], [-5,0,0],[-2.5,11.5,0]);
-        sleeve_hub(frame_support_left_back, [[-5,0,0],[-2.5,11.5,0],center_point], rod_dia=0.4);
-
-        frame_support_right_back = get_node([0,10,0], [4.3,3,0], [5,0,0],[2.5,11.5,0]);
-        sleeve_hub(frame_support_right_back, [[5,0,0],[2.5,11.5,0],center_point], rod_dia=0.4);
-
-        frame_support_left_front = get_node([0,10,0], [-2.5,11.5,0], [-5,0,0],[-2.5,11.5,0]);
-        sleeve_hub(frame_support_left_front, [[-5,0,0],center_point], rod_dia=0.4);
-
-        frame_support_right_front = get_node([0,10,0], [2.5,11.5,0], [-5,0,0],[2.5,11.5,0]);
-        sleeve_hub(frame_support_right_front, [[5,0,0],center_point], rod_dia=0.4);
-
-        frame_support_bumper = [0,19,0.2];
-        sleeve_hub(frame_support_bumper, [center_point], rod_dia=0.4);
 
         frame_support_center = [0,10,2];
         sleeve_hub(frame_support_center, [[-4.3,3,0],[-2.5,11.5,0],[4.3,3,0],[2.5,11.5,0],[0,4,6],[0,19,0]], rod_dia=0.4);
@@ -453,9 +498,6 @@ module wirefollower() {
         rotate([0,90,0])
         side_clasp(rod_dia=0.4);
 
-        translate([-3.7,0,0.3])
-        battery();
-
         wire([-2.5,11.5,0],center_point,0.4);
         wire([2.5,11.5,0],center_point,0.4);
         wire([0,19,0.2],center_point,0.4);
@@ -467,10 +509,9 @@ module wirefollower() {
 
 
 translate([0,9,0]) // for animation
-rotate([0,0,360*$t]) {
+rotate([0,0,360*$t])
         translate([0,-9,0])
-        wirefollower(); //camera nees to be 8.4cm off the ground
-}
+        wirefollower();
 
 
 //Im making a car for a competition. Because my oponents have massive, complex cars (with bigger processors, suspension, and much more) <more than 500g i think> i decided to go the other way, by making my car as light and as simple as possible in order to obtain a 30s laptime on a 20m track. Do you think this is good? (i consider replacing the battery with 2s, im using N20 1000RPM motors that we will limit electronically, and consider good printing) 
