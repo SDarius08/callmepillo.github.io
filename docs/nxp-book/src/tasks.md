@@ -16,17 +16,22 @@ Taskuri alocate fiecarui membru al echipei.
 ## Darius
 - [ ] Scrie hardware.md
 - [x] Realizeaza diagrama electrica
-- [ ] Flow hardware
+- [x] Flow hardware
 - [x] Testare placa originala NXP pentru backup
 - [x] Realizeaza plan fezabilitate
 - [x] Adauga sectiune pentru centralizare meets
+- [ ] Lipire switch de fire
+- [ ] Lipire xt60 de firul de death switch
+- [ ] Asamblare partea de electrical
+- [ ] Reglare steppers down
+- [ ] tbe
 
-## Marius
-- [x] Scrie prezentare.md
-- [x] Scrie algoritm.md
-- [ ] Printare componente (>>)
-- [ ] Construieste track improvizat
-- [ ] PR
+~## Marius~
+- ~ [x] Scrie prezentare.md~
+- ~ [x] Scrie algoritm.md~
+- ~ [ ] Printare componente (>>)~
+- ~ [ ] Construieste track improvizat~
+- ~ [ ] PR~
 
 ## Co-op
 - [ ] Marius+Darius: Realizare algoritm procesare imagini
